@@ -31,7 +31,7 @@ angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
 			};
 			promise.timeout = function (fn, time) {
 				// In case people have other preference
-				if (angular.isNumber(fn) && angular.isFunction(fn)) {
+				if (angular.isNumber(fn) && angular.isFunction(time)) {
 					var tmp = fn;
 					fn = time;
 					time = tmp;
