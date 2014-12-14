@@ -43,7 +43,7 @@ angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
 				return decoratePromise(deferred.promise);
 			};
 			promise.all = function (fn) {
-				promise.then(q.all).then(fn);
+				promise.then($delegate.all).then(fn);
 				return decoratePromise(promise);
 			};
 			return promise;
