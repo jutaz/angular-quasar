@@ -40,11 +40,11 @@ angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
 				setTimeout(function () {
 					promise.then(fn).then(deferred.resolve);
 				}, time);
-				return deferred.promise;
+				return decoratePromise(deferred.promise);
 			};
 			promise.all = function (fn) {
 				promise.then(q.all).then(fn);
-				return promise;
+				return decoratePromise(promise);
 			};
 			return promise;
 		}
