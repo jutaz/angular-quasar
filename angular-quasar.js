@@ -34,7 +34,7 @@ angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
 				if (angular.isNumber(fn) && angular.isFunction(fn)) {
 					var tmp = fn;
 					fn = time;
-					time = fn;
+					time = tmp;
 				}
 				var deferred = q.defer();
 				setTimeout(function () {
