@@ -1,0 +1,16 @@
+{
+  "name": "angular-quasar",
+  "version": "1.0.0",
+  "homepage": "https://github.com/jutaz/angular-quasar",
+  "authors": [
+    "Justas Brazauskas <brazauskasjustas@gmail.com>"
+  ],
+  "license": "Apache",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
