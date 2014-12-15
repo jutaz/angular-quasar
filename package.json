@@ -1,0 +1,23 @@
+{
+  "name": "angular-quasar",
+  "version": "0.0.0",
+  "description": "angular-quasar ==============",
+  "main": "angular-quasar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jutaz/angular-quasar.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jutaz/angular-quasar/issues"
+  },
+  "homepage": "https://github.com/jutaz/angular-quasar",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-uglify": "^0.6.0"
+  }
+}
