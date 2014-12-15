@@ -66,3 +66,15 @@ $q.fcall(function () {
   // `resolved` contains resolved promises array
 });
 ```
+
+### .spread
+
+Spreads array items as arguments.
+
+```js
+$q.fcall(function () {
+  return ['a', 'b', 'c'];
+}).all(function (a, b, c) {
+  // `a`, `b`, `c` contain their respective values
+});
+```
