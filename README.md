@@ -1,7 +1,7 @@
 angular-quasar
 ==============
 
-Enhanced angular Q on steroids.
+Enhanced angular $q on steroids.
 
 ## API
 
