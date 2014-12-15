@@ -22,12 +22,10 @@ angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
 				return decoratePromise(p);
 			};
 			promise.success = function (fn) {
-				promise.then(unpackHttpRes.bind(undefined, fn));
-				return promise;
+				return promise.then(unpackHttpRes.bind(undefined, fn));
 			};
 			promise.error = function (fn) {
-				promise.then(null, unpackHttpRes.bind(undefined, fn));
-				return promise;
+				return promise.then(null, unpackHttpRes.bind(undefined, fn));
 			};
 			promise.delay = promise.timeout = function (fn, time) {
 				// In case people have other preference
