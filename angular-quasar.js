@@ -53,8 +53,14 @@
 					return decoratePromise(deferred.promise);
 				};
 				promise.all = function (fn) {
-					promise.then($delegate.all).then(fn);
-					return decoratePromise(promise);
+					var p = promise.then(function (data) {
+						if (angular.isArray(data)) {
+							return q.all(data);
+						} else {
+							return data;
+						}
+					}).then(fn);
+					return p;
 				};
 				return promise;
 			}
