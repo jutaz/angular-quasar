@@ -27,6 +27,15 @@ angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
 			promise.error = function (fn) {
 				return promise.then(null, unpackHttpRes.bind(undefined, fn));
 			};
+			promise.spread = function (fn) {
+				return promise.then(function (data) {
+					if (!angular.isArray(data)) {
+						return fn(data);
+					} else {
+						return fn.apply(undefined, data);
+					}
+				});
+			};
 			promise.delay = promise.timeout = function (fn, time) {
 				// In case people have other preference
 				if (angular.isNumber(fn) && angular.isFunction(time)) {
