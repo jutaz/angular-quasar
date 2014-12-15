@@ -7,7 +7,7 @@ function unpackHttpRes(fn, value) {
 }
 
 angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
-	$provide.decorator('$q', function ($delegate) {
+	$provide.decorator('$q', ['$delegate', function ($delegate) {
 		var q = {
 			when: $delegate.when,
 			reject: $delegate.reject,
@@ -65,5 +65,5 @@ angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
 			};
 		});
 		return $delegate;
-	});
+	}]);
 }]);
