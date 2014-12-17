@@ -3,9 +3,9 @@
 
 	var unpackHttpRes = function(fn, value) {
 		if (angular.isObject(value) && value.data && value.status && value.headers && value.config && value.statusText && angular.isFunction(value.headers)) {
-			fn(value.data, value.status, value.headers, value.config);
+			return fn(value.data, value.status, value.headers, value.config);
 		} else {
-			fn(value);
+			return fn(value);
 		}
 	};
 
