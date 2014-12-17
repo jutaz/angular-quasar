@@ -35,7 +35,8 @@
 						if (!angular.isArray(data)) {
 							return fn(data);
 						} else {
-							return fn.apply(undefined, data);
+							var resolved = q.all(data); // Resolve promises, if any
+							return fn.apply(undefined, resolved);
 						}
 					});
 				};
