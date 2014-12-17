@@ -21,6 +21,9 @@
 			function decoratePromise(promise) {
 				promise._then = promise.then;
 				promise.then = function(thenFn, errFn, notifyFn) {
+					if (angular.isObject(errFn)) {
+						thenFn = thenFn.bind(errFn);
+					}
 					var p = promise._then(thenFn, errFn, notifyFn);
 					return decoratePromise(p);
 				};
