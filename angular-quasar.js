@@ -33,17 +33,17 @@
 				promise.error = function (fn) {
 					return promise.then(null, unpackHttpRes.bind(undefined, fn));
 				};
-				promise.spread = function (fn) {
+				promise.spread = function (fn, context) {
 					return promise.then(function (data) {
 						if (!angular.isArray(data)) {
-							return fn(data);
+							return fn.call(context, data);
 						} else {
 							var resolved = q.all(data); // Resolve promises, if any
-							return fn.apply(undefined, resolved);
+							return fn.apply(context, resolved);
 						}
 					});
 				};
-				promise.delay = promise.timeout = function (fn, time) {
+				promise.delay = promise.timeout = function (fn, time, context) {
 					// In case people have other preference
 					if (angular.isNumber(fn) && angular.isFunction(time)) {
 						var tmp = fn;
@@ -52,25 +52,25 @@
 					}
 					var deferred = q.defer();
 					setTimeout(function () {
-						promise.then(fn).then(deferred.resolve);
+						promise.then(fn, context).then(deferred.resolve);
 					}, time);
 					return decoratePromise(deferred.promise);
 				};
-				promise.all = function (fn) {
+				promise.all = function (fn, context) {
 					var p = promise.then(function (data) {
 						if (angular.isArray(data)) {
 							return q.all(data);
 						} else {
 							return data;
 						}
-					}).then(fn);
+					}).then(fn, context);
 					return p;
 				};
 				return promise;
 			}
 
-			$delegate.fcall = function (fn) {
-				return $delegate.when().then(fn);
+			$delegate.fcall = function (fn, context) {
+				return $delegate.when().then(fn, context);
 			};
 
 			$delegate.defer = function() {
