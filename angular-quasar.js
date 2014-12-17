@@ -70,7 +70,7 @@
 			}
 
 			$delegate.fcall = function (fn) {
-				return $delegate.when(true).then(fn);
+				return $delegate.when().then(fn);
 			};
 
 			$delegate.defer = function() {
