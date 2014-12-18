@@ -4,7 +4,8 @@
   "description": "angular-quasar ==============",
   "main": "angular-quasar.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "karma start --single-run --browsers Firefox --no-auto-watch",
+    "test:local": "karma start --single-run --no-auto-watch"
   },
   "repository": {
     "type": "git",
