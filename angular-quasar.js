@@ -39,8 +39,9 @@
 						if (!angular.isArray(data)) {
 							return fn.call(context, data);
 						} else {
-							var resolved = q.all(data); // Resolve promises, if any
-							return fn.apply(context, resolved);
+							return q.all(data).then(function (resolved) {
+								return fn.apply(context, resolved);
+							}); // Resolve promises, if any
 						}
 					});
 				};
