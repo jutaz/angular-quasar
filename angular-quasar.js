@@ -20,6 +20,7 @@
 
 			function decoratePromise(promise) {
 				promise._then = promise.then;
+				promise.extended = true; // Good to have for tests
 				promise.then = function(thenFn, errFn, notifyFn) {
 					if (angular.isObject(errFn)) {
 						thenFn = thenFn.bind(errFn);
