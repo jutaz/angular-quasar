@@ -18,6 +18,11 @@
   "homepage": "https://github.com/jutaz/angular-quasar",
   "devDependencies": {
     "grunt": "^0.4.5",
-    "grunt-contrib-uglify": "^0.6.0"
+    "grunt-contrib-uglify": "^0.6.0",
+    "karma": "^0.12.24",
+    "karma-jasmine": "^0.2.3",
+    "karma-mocha": "^0.1.9",
+    "karma-chrome-launcher": "^0.1.5",
+    "karma-firefox-launcher": "^0.1.3"
   }
 }
