@@ -18,10 +18,10 @@
         defer: $delegate.defer,
       };
 
-      function decoratePromise(promise) {
+      function decoratePromise(promise, originalPromise) {
         promise._then = promise.then;
         promise.extended = true; // Good to have for tests
-        promise._context = null;
+        promise._context = originalPromise ? originalPromise._context : null;
 
         promise.bind = function(context) {
           if (angular.isObject(context)) {
@@ -62,7 +62,7 @@
           }
 
           var p = promise._then(thenFn, errFn, notifyFn);
-          return decoratePromise(p);
+          return decoratePromise(p, promise);
         };
 
         promise.success = function(fn) {
@@ -98,7 +98,7 @@
             promise.then(fn, context).then(deferred.resolve);
           }, time);
 
-          return decoratePromise(deferred.promise);
+          return decoratePromise(deferred.promise, promise);
         };
 
         promise.all = function(fn, context) {

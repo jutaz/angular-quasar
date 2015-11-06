@@ -136,6 +136,12 @@ var expect = chai.expect;
 						expect(this.a).to.be.equal(ctx.a);
 					}, function () {
 						expect(this.a).to.be.equal(ctx.a);
+					}).then(function () {
+						expect(this.a).to.be.equal(ctx.a);
+					}, function () {
+						expect(this.a).to.be.equal(ctx.a);
+					}, function () {
+						expect(this.a).to.be.equal(ctx.a);
 					});
 					defer.resolve();
 					rootScope.$digest();
