@@ -22,6 +22,14 @@
         promise._then = promise.then;
         promise.extended = true; // Good to have for tests
 
+        promise.catch = function(errFn, bind) {
+          if (angular.isObject(bind)) {
+            errFn = errFn.bind(bind);
+          }
+
+          return this.then(null, errFn);
+        };
+
         promise.then = function(thenFn, errFn, notifyFn) {
           if (angular.isObject(errFn)) {
             thenFn = thenFn.bind(errFn);
