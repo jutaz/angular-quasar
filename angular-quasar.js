@@ -77,7 +77,7 @@
 
         promise.all = function(fn, context) {
           var p = promise.then(function(data) {
-            if (angular.isArray(data)) {
+            if (angular.isArray(data) || angular.isObject(data)) {
               return q.all(data);
             } else {
               return data;
