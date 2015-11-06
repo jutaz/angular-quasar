@@ -125,6 +125,66 @@ var expect = chai.expect;
 					defer.resolve();
 					rootScope.$digest();
 				});
+
+				it('should bind all argument functions to `#_context`, if present.', function() {
+					var ctx = {
+						a: 'b'
+					};
+					promise.bind(ctx).then(function () {
+						expect(this.a).to.be.equal(ctx.a);
+					}, function () {
+						expect(this.a).to.be.equal(ctx.a);
+					}, function () {
+						expect(this.a).to.be.equal(ctx.a);
+					});
+					defer.resolve();
+					rootScope.$digest();
+				});
+			});
+
+			describe('#catch()', function() {
+				it('should be a function', function() {
+					expect(promise.catch).to.be.a('function');
+				});
+
+				it('should call `#then()` with function as 2nd argument', function() {
+					var fn = function () {};
+					spyOn(promise, 'then');
+					promise.catch(fn);
+					defer.reject('error');
+					expect(promise.then.calls.count()).to.be.equal(1);
+					expect(promise.then.calls.first().args).to.be.eql([null, fn]);
+					rootScope.$digest();
+				});
+			});
+
+			describe('#bind()', function() {
+				it('should be a function', function() {
+					expect(promise.bind).to.be.a('function');
+				});
+
+				it('should set `#_context` with given context', function() {
+					promise.bind({
+						a: 'b'
+					});
+					expect(promise._context).to.be.eql({
+						a: 'b'
+					});
+					rootScope.$digest();
+				});
+			});
+
+			describe('#unbind()', function() {
+				it('should be a function', function() {
+					expect(promise.unbind).to.be.a('function');
+				});
+
+				it('should set `#_context` to `null`.', function() {
+					promise._context = {};
+					promise.unbind();
+					expect(promise._context).to.be.eql(null);
+					rootScope.$digest();
+				});
 			});
 
 			describe('#success()', function() {
