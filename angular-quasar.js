@@ -21,6 +21,20 @@
       function decoratePromise(promise) {
         promise._then = promise.then;
         promise.extended = true; // Good to have for tests
+        promise._context = null;
+
+        promise.bind = function(context) {
+          if (angular.isObject(context)) {
+            promise._context = context;
+          }
+
+          return this;
+        };
+
+        promise.unbind = function() {
+          promise._context = null;
+          return this;
+        };
 
         promise.catch = function(errFn, bind) {
           if (angular.isObject(bind)) {
@@ -31,7 +45,19 @@
         };
 
         promise.then = function(thenFn, errFn, notifyFn) {
-          if (angular.isObject(errFn)) {
+          if (promise._context) {
+            if (angular.isFunction(thenFn)) {
+              thenFn = thenFn.bind(promise._context);
+            }
+
+            if (angular.isFunction(errFn)) {
+              errFn = errFn.bind(promise._context);
+            }
+
+            if (angular.isFunction(notifyFn)) {
+              notifyFn = notifyFn.bind(promise._context);
+            }
+          } else if (angular.isObject(errFn)) {
             thenFn = thenFn.bind(errFn);
           }
 
