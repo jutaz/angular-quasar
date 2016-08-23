@@ -5,7 +5,11 @@ var expect = chai.expect;
 
 	describe('Quasar', function () {
 		beforeEach(module('jutaz.quasar'));
-		var q, rootScope, httpResponseMock;
+		var q,
+			rootScope,
+			httpResponseMock,
+			MyCustomError,
+			MyAnotherCustomError;
 
 		beforeEach(inject(function ($q, $rootScope) {
 			q = $q;
@@ -18,6 +22,11 @@ var expect = chai.expect;
 				config: {},
 				statusText: 'OK'
 			};
+
+			MyCustomError = function () {}
+			MyCustomError.prototype = Object.create(Error.prototype);
+			MyAnotherCustomError = function () {}
+			MyAnotherCustomError.prototype = Object.create(Error.prototype);
 		}));
 
 		describe('#all()', function () {
@@ -117,15 +126,6 @@ var expect = chai.expect;
 					expect(p).to.be.an('object');
 				});
 
-				it('should bind a function to given scope', function(done) {
-					promise.then(function () {
-						expect(this.unicorn).to.be.equal(1337);
-						done();
-					}, {unicorn: 1337});
-					defer.resolve();
-					rootScope.$digest();
-				});
-
 				it('should bind all argument functions to `#_context`, if present.', function() {
 					var ctx = {
 						a: 'b'
@@ -148,6 +148,28 @@ var expect = chai.expect;
 				});
 			});
 
+			describe('#finally()', function() {
+				it('should be a function', function() {
+					expect(promise.finally).to.be.a('function');
+				});
+
+				it('should return a promise', function() {
+					var p = promise.finally(function () {});
+					expect(p).to.be.an('object');
+				});
+
+				it('should bind `#_context`, if present.', function() {
+					var ctx = {
+						a: 'b'
+					};
+					promise.bind(ctx).finally(function () {
+						expect(this.a).to.be.equal(ctx.a);
+					});
+					defer.resolve();
+					rootScope.$digest();
+				});
+			});
+
 			describe('#catch()', function() {
 				it('should be a function', function() {
 					expect(promise.catch).to.be.a('function');
@@ -160,6 +182,58 @@ var expect = chai.expect;
 					defer.reject('error');
 					expect(promise.then.calls.count()).to.be.equal(1);
 					expect(promise.then.calls.first().args).to.be.eql([null, fn]);
+					rootScope.$digest();
+				});
+
+				it('should catch a filtered exception', function () {
+					var fn = jasmine.createSpy('catch'),
+							err = new MyCustomError();
+					q.reject(err)
+						.catch(MyCustomError, fn)
+						.then(function () {
+							expect(fn.calls.count()).to.be.equal(1);
+							expect(fn.calls.first().args).to.be.eql([err]);
+						});
+					rootScope.$digest();
+				});
+
+				it('should bypass unmatched exceptions', function () {
+					var fn = jasmine.createSpy('catch'),
+							fn2 = jasmine.createSpy('catch2'),
+							err = new MyCustomError();
+
+					q.reject(err)
+						.catch(MyAnotherCustomError, fn)
+						.catch(MyCustomError, fn2)
+						.then(function () {
+							expect(fn.calls.count()).to.be.equal(0);
+							expect(fn2.calls.count()).to.be.equal(1);
+							expect(fn2.calls.first().args).to.be.eql([err]);
+						});
+					rootScope.$digest();
+				});
+
+				it('should allow multiple filtered exceptions', function () {
+					var fn = jasmine.createSpy('catch'),
+							err = new MyCustomError();
+					q.reject(err)
+						.catch(MyAnotherCustomError, MyCustomError, fn)
+						.then(function () {
+							expect(fn.calls.count()).to.be.equal(1);
+							expect(fn.calls.first().args).to.be.eql([err]);
+						});
+					rootScope.$digest();
+				});
+
+				it('should not further reject filtered exception', function () {
+					var fn = jasmine.createSpy('catch'),
+							err = new MyCustomError();
+					q.reject(err)
+						.catch(MyCustomError, angular.noop)
+						.catch(fn)
+						.then(function () {
+							expect(fn.calls.count()).to.be.equal(0);
+						});
 					rootScope.$digest();
 				});
 			});

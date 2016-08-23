@@ -53,24 +53,33 @@
         };
 
         promise.catch = function (errFn) {
-          return this.then(null, errFn);
+          var catchArguments = arguments;
+          if (catchArguments.length === 1) {
+            return promise.then(null, errFn);
+          }
+          return promise.then(null, function (e) {
+            for (var i = 0; i < catchArguments.length; i++) {
+              if (i === catchArguments.length - 1) {
+                return q.reject(e);
+              }
+              if (e instanceof catchArguments[i]) {
+                return catchArguments[catchArguments.length - 1].call(promise._context, e);
+              }
+            }
+          });
         };
 
         promise.then = function (thenFn, errFn, notifyFn) {
-          if (promise._context) {
-            if (angular.isFunction(thenFn)) {
-              thenFn = thenFn.bind(promise._context);
-            }
+          if (angular.isFunction(thenFn)) {
+            thenFn = thenFn.bind(promise._context);
+          }
 
-            if (angular.isFunction(errFn)) {
-              errFn = errFn.bind(promise._context);
-            }
+          if (angular.isFunction(errFn)) {
+            errFn = errFn.bind(promise._context);
+          }
 
-            if (angular.isFunction(notifyFn)) {
-              notifyFn = notifyFn.bind(promise._context);
-            }
-          } else if (angular.isObject(errFn)) {
-            thenFn = thenFn.bind(errFn);
+          if (angular.isFunction(notifyFn)) {
+            notifyFn = notifyFn.bind(promise._context);
           }
 
           var p = promise._then(thenFn, errFn, notifyFn);
