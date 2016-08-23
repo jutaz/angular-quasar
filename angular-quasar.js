@@ -1,16 +1,23 @@
-(function() {
+(function () {
   'use strict';
 
-  var unpackHttpRes = function(fn, value) {
-    if (angular.isObject(value) && value.data && value.status && value.headers && value.config && value.statusText && angular.isFunction(value.headers)) {
+  var unpackHttpRes = function (fn, value) {
+    if (
+        angular.isObject(value) &&
+        value.data &&
+        value.status &&
+        value.headers &&
+        value.config &&
+        value.statusText &&
+        angular.isFunction(value.headers)
+      ) {
       return fn(value.data, value.status, value.headers, value.config);
-    } else {
-      return fn(value);
     }
+    return fn(value);
   };
 
-  angular.module('jutaz.quasar', []).config(['$provide', function($provide) {
-    $provide.decorator('$q', ['$delegate', function($delegate) {
+  angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
+    $provide.decorator('$q', ['$delegate', function ($delegate) {
       var q = {
         when: $delegate.when,
         reject: $delegate.reject,
@@ -24,7 +31,7 @@
         promise.extended = true; // Good to have for tests
         promise._context = originalPromise ? originalPromise._context : null;
 
-        promise.bind = function(context) {
+        promise.bind = function (context) {
           if (angular.isObject(context)) {
             promise._context = context;
           }
@@ -32,12 +39,12 @@
           return this;
         };
 
-        promise.unbind = function() {
+        promise.unbind = function () {
           promise._context = null;
           return this;
         };
 
-        promise.finally = function(fn) {
+        promise.finally = function (fn) {
           if (angular.isFunction(fn)) {
             fn = fn.bind(promise._context);
           }
@@ -45,15 +52,11 @@
           return this._finally(fn);
         };
 
-        promise.catch = function(errFn, bind) {
-          if (angular.isObject(bind)) {
-            errFn = errFn.bind(bind);
-          }
-
+        promise.catch = function (errFn) {
           return this.then(null, errFn);
         };
 
-        promise.then = function(thenFn, errFn, notifyFn) {
+        promise.then = function (thenFn, errFn, notifyFn) {
           if (promise._context) {
             if (angular.isFunction(thenFn)) {
               thenFn = thenFn.bind(promise._context);
@@ -74,27 +77,27 @@
           return decoratePromise(p, promise);
         };
 
-        promise.success = function(fn) {
+        promise.success = function (fn) {
           return promise.then(unpackHttpRes.bind(undefined, fn));
         };
 
-        promise.error = function(fn) {
+        promise.error = function (fn) {
           return promise.then(null, unpackHttpRes.bind(undefined, fn));
         };
 
-        promise.spread = function(fn, context) {
-          return promise.then(function(data) {
+        promise.spread = function (fn) {
+          return promise.then(function (data) {
             if (!angular.isArray(data)) {
-              return fn.call(context, data);
+              return fn.call(promise._context, data);
             } else {
-              return q.all(data).then(function(resolved) {
-                return fn.apply(context, resolved);
+              return q.all(data).then(function (resolved) {
+                return fn.apply(promise._context, resolved);
               }); // Resolve promises, if any
             }
           });
         };
 
-        promise.delay = promise.timeout = function(fn, time, context) {
+        promise.delay = promise.timeout = function (fn, time) {
           // In case people have other preference
           if (angular.isNumber(fn) && angular.isFunction(time)) {
             var tmp = fn;
@@ -103,39 +106,39 @@
           }
 
           var deferred = q.defer();
-          setTimeout(function() {
-            promise.then(fn, context).then(deferred.resolve);
+          setTimeout(function () {
+            promise.then(fn).then(deferred.resolve);
           }, time);
 
           return decoratePromise(deferred.promise, promise);
         };
 
-        promise.all = function(fn, context) {
-          var p = promise.then(function(data) {
+        promise.all = function (fn) {
+          var p = promise.then(function (data) {
             if (angular.isArray(data) || angular.isObject(data)) {
               return q.all(data);
             } else {
               return data;
             }
-          }).then(fn, context);
+          }).then(fn);
           return p;
         };
 
         return promise;
       }
 
-      $delegate.fcall = function(fn, context) {
-        return $delegate.when().then(fn, context);
+      $delegate.fcall = function (fn) {
+        return $delegate.when().then(fn);
       };
 
-      $delegate.defer = function() {
+      $delegate.defer = function () {
         var deferred = q.defer();
         decoratePromise(deferred.promise);
         return deferred;
       };
 
-      ['all', 'reject', 'when'].forEach(function(fn) {
-        $delegate[fn] = function() {
+      ['all', 'reject', 'when'].forEach(function (fn) {
+        $delegate[fn] = function () {
           return decoratePromise(q[fn].apply(this, arguments));
         };
       });
