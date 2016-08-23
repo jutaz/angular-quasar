@@ -20,6 +20,7 @@
 
       function decoratePromise(promise, originalPromise) {
         promise._then = promise.then;
+        promise._finally = promise.finally;
         promise.extended = true; // Good to have for tests
         promise._context = originalPromise ? originalPromise._context : null;
 
@@ -34,6 +35,14 @@
         promise.unbind = function() {
           promise._context = null;
           return this;
+        };
+
+        promise.finally = function(fn) {
+          if (angular.isFunction(fn)) {
+            fn = fn.bind(promise._context);
+          }
+
+          return this._finally(fn);
         };
 
         promise.catch = function(errFn, bind) {
