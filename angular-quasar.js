@@ -18,12 +18,11 @@
 
   angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
     $provide.decorator('$q', ['$delegate', function ($delegate) {
-      var q = {
-        when: $delegate.when,
-        reject: $delegate.reject,
-        all: $delegate.all,
-        defer: $delegate.defer,
-      };
+      var q = {};
+
+      angular.forEach($delegate, function (value, key) {
+        q[key] = $delegate[key];
+      });
 
       function decoratePromise(promise, originalPromise) {
         promise._then = promise.then;
@@ -146,9 +145,12 @@
         return deferred;
       };
 
-      ['all', 'reject', 'when'].forEach(function (fn) {
-        $delegate[fn] = function () {
-          return decoratePromise(q[fn].apply(this, arguments));
+      angular.forEach($delegate, function (value, key) {
+        if (!angular.isFunction(q[key]) || key === 'defer') {
+          return;
+        }
+        $delegate[key] = function () {
+          return decoratePromise(q[key].apply(this, arguments));
         };
       });
 

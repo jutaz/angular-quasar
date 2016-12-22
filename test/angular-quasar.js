@@ -85,7 +85,7 @@ var expect = chai.expect;
 
 		describe('#defer()', function() {
 			it('should be a function', function() {
-				expect(q.when).to.be.a('function');
+				expect(q.defer).to.be.a('function');
 			});
 			it('should return extended promise', function() {
 				var defer = q.defer();
@@ -179,7 +179,6 @@ var expect = chai.expect;
 					var fn = function () {};
 					spyOn(promise, 'then');
 					promise.catch(fn);
-					defer.reject('error');
 					expect(promise.then.calls.count()).to.be.equal(1);
 					expect(promise.then.calls.first().args).to.be.eql([null, fn]);
 					rootScope.$digest();
