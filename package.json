@@ -6,7 +6,6 @@
   "scripts": {
     "test": "karma start --single-run --browsers Firefox --no-auto-watch",
     "test:local": "karma start --single-run --no-auto-watch",
-    "install": "bower install",
     "build": "grunt build"
   },
   "repository": {
