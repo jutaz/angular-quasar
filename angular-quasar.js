@@ -18,10 +18,15 @@
 
   angular.module('jutaz.quasar', []).config(['$provide', function ($provide) {
     $provide.decorator('$q', ['$delegate', function ($delegate) {
-      var q = {};
+      var q = {},
+          originalDelegate = angular.copy($delegate);
 
-      angular.forEach($delegate, function (value, key) {
-        q[key] = $delegate[key];
+      $delegate = function (cb) {
+        return decoratePromise(originalDelegate(cb));
+      };
+
+      angular.forEach(originalDelegate, function (value, key) {
+        q[key] = originalDelegate[key];
       });
 
       function decoratePromise(promise, originalPromise) {
@@ -145,7 +150,7 @@
         return deferred;
       };
 
-      angular.forEach($delegate, function (value, key) {
+      angular.forEach(originalDelegate, function (value, key) {
         if (!angular.isFunction(q[key]) || key === 'defer') {
           return;
         }
