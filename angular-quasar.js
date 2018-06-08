@@ -30,6 +30,9 @@
       });
 
       function decoratePromise(promise, originalPromise) {
+        if (promise.extended && promise._then && promise._finally) {
+          return promise;
+        }
         promise._then = promise.then;
         promise._finally = promise.finally;
         promise.extended = true; // Good to have for tests
